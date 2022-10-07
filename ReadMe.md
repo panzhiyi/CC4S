@@ -1,5 +1,5 @@
 # CC4S: Encouraging Certainty and Consistency in Scribble-Supervised Semantic Segmentation
-[Zhiyi Pan](https://github.com/panzhiyi), [Haochen Sun](https://github.com/sun1233217T), [Peng Jiang*](https://github.com/sdujump), Yunhai Wang, Changhe Tu, Anthony G. Cohn
+[Zhiyi Pan](https://github.com/panzhiyi), [Haochen Sun](https://github.com/sun1233217T), [Peng Jiang*](https://github.com/sdujump), Ge Li, Changhe Tu, Haibin Ling
 
 The workis based on URSS(https://github.com/panzhiyi/URSS), the paper have been send to PAMI and is under review.
 
