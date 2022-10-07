@@ -60,13 +60,13 @@ Please notice the path to save.
 Do the operation like stage1:  
   
 
-Please modify the dataset file path in **train_seg_UR.sh** and run:
+Please modify the dataset file path in **train_seg_UR_stage2.sh** and run:
 
 ```
 sh train_seg_UR_stage2.sh
 ```
 
-Please modify the model(obtained by first-stage training) file path in **train_seg_SS.sh** and run: 
+Please modify the model(obtained by first-stage training) file path in **train_seg_SS_stage2.sh** and run: 
 
 ```
 sh train_seg_SS_stage2.sh
