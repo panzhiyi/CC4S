@@ -1,5 +1,5 @@
 # CC4S: Encouraging Certainty and Consistency in Scribble-Supervised Semantic Segmentation
-[Zhiyi Pan](https://github.com/panzhiyi),[Haochen Sun](https://github.com/sun1233217T), [Peng Jiang*](https://github.com/sdujump), Yunhai Wang, Changhe Tu, Anthony G. Cohn
+[Zhiyi Pan](https://github.com/panzhiyi), [Haochen Sun](https://github.com/sun1233217T), [Peng Jiang*](https://github.com/sdujump), Yunhai Wang, Changhe Tu, Anthony G. Cohn
 
 The workis based on URSS(https://github.com/panzhiyi/URSS), the paper have been send to PAMI and is under review.
 
@@ -51,10 +51,9 @@ All the computations are carried out on NVIDIA TITAN RTX GPUs.
 
 ### Refine stage:
 
-##### data pre-treatment
+##### preparation for color constraint regularizer
 
-Please modify the dataset file path in **/tool/scribblesup.m** and run in matlab.  
-Please notice the path to save.
+Please modify the dataset file path and save path in **/tool/scribblesup.m** and run in matlab.  
 
 ##### refinement
 Do the operation like stage1:  
@@ -71,7 +70,7 @@ Please modify the model(obtained by first-stage training) file path in **train_s
 ```
 sh train_seg_SS_stage2.sh
 ```
-Evaluate is teh same as before.
+Evaluate is the same as before.
 
 
 
