@@ -40,9 +40,10 @@ class MyArgumentParser():
         if inference:
             self.parser.add_argument('checkpoint_path', metavar='CHECKPOINT_PATH', help='path to the checkpoint file')
             self.parser.add_argument('save_path', default='val', metavar='SAVE_PATH', help='path to the inference results')
-            self.parser.add_argument('if_mask', default = 'False', metavar='OUT_PUT_TYPE', help='if output the unmask data for next iter')
+            self.parser.add_argument('if_mask', default = 'True', metavar='OUT_PUT_TYPE', help='if output the unmask data for next iter')
             self.parser.add_argument('train_path', default='None' ,metavar='TRAIN_PATH', help='path to the dataset training file')
             self.parser.add_argument('confidence', default=1, type=float,metavar='LABLE_CONFIDENCE_LIMIT/CRF_SWITCH', help='Confidence for output label, 1 means 100%; 0.5 means 50%,2 means using crf')
+            self.parser.add_argument('data_list',nargs='?',default='train.txt',metavar='DATA_LIST', help='choose trainingg data list (xxx.txt)')
         else:
             self.parser.add_argument('train_path', metavar='TRAIN_PATH', help='path to the dataset training file')
             self.parser.add_argument('batchsize', default=16, type=int, metavar='BATCH_SIZE', help='batchsize')
@@ -55,10 +56,19 @@ class MyArgumentParser():
             self.parser.add_argument('model_path', default= 'None' ,help='pretrain model path')
             self.parser.add_argument('selfloss_type', default='flip', metavar='SELFLOSS_TYPE', help='the type of self supervised operation')
             self.parser.add_argument('selfloss_feature', default='P', metavar='SELFLOSS_FEATURE', help='the input feature of self supervised loss')
-            self.parser.add_argument('if_laplaceloss', default='False', metavar='IF_LAPLACELOSS', help='use Laplace_Loss or not')
+            self.parser.add_argument('if_laplaceloss', default='False', metavar='IF_LAPLACELOSS', help='use Laplace_Loss or not,use \'Contrast\' to switch contrstive loss mode')
             self.parser.add_argument('laplace_path', metavar='laplace_PATH', help='path to the Laplace matrix file(.npy file)')
             self.parser.add_argument('spiex_path', metavar='spiex_PATH', help='path to the spiex file(.npy file)')
             self.parser.add_argument('data_list', metavar='DATA_LIST', help='choose trainingg data list (xxx.txt)')
+        
+        self.parser.add_argument('sleep_time',nargs='?',default=0,type=int,metavar='DELAY_TIMES(s)', help='sleeptime')
+        self.parser.add_argument('special_set',nargs='?',default=0,type=int,metavar='SPECIAL', help='special')
+        ''' 0b0000001 : reserve 
+        0b00000010 : use medial channal of deeplbv3+ as U-Net-like connnect 
+        0b00000100 : output_stride = 8 or 16 ; False means 16 True means 8
+        0b10000001 : train on context dataset
+        '''
+
     def get_parser(self):
         return self.parser
 
@@ -336,9 +346,9 @@ def get_mask_pallete(npimg, dataset='pascal_voc'):
     out_img.putpalette(colorpallete)
     return out_img
 
-def get_confidence_pallete(npimg):
+def get_confidence_pallete(npimg,max_cls = 21):
     npimg[npimg==-1] = 255
-    npimg[npimg==21] = 255
+    npimg[npimg==max_cls] = 255
     out_img = Image.fromarray(npimg.squeeze().astype('uint8'))
     return out_img
 
@@ -383,7 +393,6 @@ def eq2(imgname,preresult,save_path):
             result[image_spiex[i][j]] += preresult[i][j]
     np.save(save_path,result)
 
-
 def str2bool(v):
     if isinstance(v, bool):
         return v
@@ -391,10 +400,22 @@ def str2bool(v):
         return 1
     elif v.lower() in ('no', 'false', 'f', 'n', '0'):
         return 0
-    elif v.lower() in ('2','mat'):
+    elif v.lower() in ('2','mat','contrast'):
         return 2
-    elif v.lower() in ('3','characteristic ','spi'):
+    elif v.lower() in ('3','characteristic ','spi','p_contrast','coco'):
         return 3
+    elif v.lower() in ('4','coco_traintoval'):
+        return 4
+    elif v.lower() in ('z_contrast'):
+        return int(0b10000011)
+    elif v.lower() in ('x_contrast'):
+        return int(0b10100011)
+    elif v.lower() in ('z_contrast_ur'):
+        return int(0b11000011)
+    elif v.lower() in ('x_contrast_ur'):
+        return int(0b11100011)
+    elif v.lower() in ('-1'):
+        return -1
     else:
         return 0
 
@@ -415,6 +436,41 @@ def nearest_neighbor_resize(img, new_w, new_h):
             ret_img[i, j] = img[p_y, p_x]
 
     return ret_img
+
+def kl_divergence_core(p, q):
+    if isinstance(p, torch.Tensor):
+        return torch.sum(p * torch.log(p / q))/ (q.shape[0] * q.shape[1])
+    else:
+        return np.sum(p * np.log(p / q)) / (q.shape[0] * q.shape[1])
+
+def js_divergence_core(p, q):
+    m = 0.5 * (p + q)
+    return 0.5 * kl_divergence_core(p, m) + 0.5 * kl_divergence_core(q, m)
+
+def divergence_core(ps,qs,T,func):
+    div = 0
+    l = len(ps)
+    for i in range(l):
+        s = len(ps[i])
+        for j in range(s):
+            p = ps[i][j]
+            q = qs[i][j]
+            q = torch.bmm(torch.bmm(T, q), T)
+            t_div = func(p, q)
+            div += t_div
+    return div
+
+def kl_divergence(ps,qs,T):
+    return divergence_core(ps,qs,T,kl_divergence_core)
+
+def js_divergence(ps,qs,T):
+    return divergence_core(ps,qs,T,js_divergence_core)
+
+def pre_divergence(x,y):
+    prediction1 = np.argmax(x, axis=2)
+    prediction2 = np.argmax(y, axis=2)
+    div = np.sum(prediction1 != prediction2) / (x.shape[0] * x.shape[1])
+    return div
 
 vocpallete = _get_voc_pallete(256)
 

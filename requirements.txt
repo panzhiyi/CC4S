@@ -8,3 +8,7 @@ torchvision==0.13.1
 Pillow==9.2.0
 tensorboardX==2.5.1
 h5py==3.7.0
+mmcv-full==1.7.2 -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.12.0/index.html
+matplotlib==3.7.5
+terminaltables==3.1.10
+timm==0.6.12
