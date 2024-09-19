@@ -3,7 +3,7 @@
 
 The work is based on URSS (https://github.com/panzhiyi/URSS) and has been accepted by TPAMI.
 
-### Benchmark Setup
+## Benchmark Setup
 
 ##### Dataset
 
@@ -19,7 +19,7 @@ pip install -r requirements.txt
 
 You can download our [pretrained model](https://drive.google.com/drive/folders/1pA0OKI5dczI5rgk-tPaZrmmFwkbm37DE?usp=sharing) to reproduce the results reported in the paper.
 
-### Pseudo-label Generation Phase
+## Pseudo-label Generation Phase
 
 ##### Baseline
 
@@ -57,7 +57,7 @@ sh evaluate.sh
 
 All the computations are carried out on NVIDIA TITAN RTX GPUs.
 
-### Pseudo-label Retraining Phase
+## Pseudo-label Retraining Phase
 
 ##### Preparation for color constraint regularizer
 
@@ -80,7 +80,7 @@ sh train_seg_SS_stage2.sh
 ```
 Evaluate is the same as before.
 
-### Citation
+## Citation
 
 If you find our code or paper useful, please cite:
 
