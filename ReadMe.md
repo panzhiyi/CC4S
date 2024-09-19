@@ -3,21 +3,25 @@
 
 The work is based on URSS (https://github.com/panzhiyi/URSS) and has been accepted by TPAMI.
 
-##### dataset
+### Benchmark Setup
+
+##### Dataset
 
 *scribble_shrink* and *scribble_drop* are available at [here](https://drive.google.com/drive/folders/1q2PvbQVOdIY9S-qjh85ohM66svzp9wnp).  The *scribble_sup* dataset can be downloaded on [jifengdai.org/downloads/scribble_sup/](https://jifengdai.org/downloads/scribble_sup/).
 
-##### environment
+##### Environment
 
 ```
 pip install -r requirements.txt
 ```
 
-##### checkpoint
+##### Checkpoints
 
 You can download our [pretrained model](https://drive.google.com/drive/folders/1pA0OKI5dczI5rgk-tPaZrmmFwkbm37DE?usp=sharing) to reproduce the results reported in the paper.
 
-##### baseline
+### Pseudo-label Generation Phase
+
+##### Baseline
 
 Please modify the dataset file path in **train_seg_baseline.sh** and run:
 
@@ -53,7 +57,7 @@ sh evaluate.sh
 
 All the computations are carried out on NVIDIA TITAN RTX GPUs.
 
-### Refine stage:
+### Pseudo-label Retraining Phase
 
 ##### Preparation for color constraint regularizer
 
@@ -76,7 +80,18 @@ sh train_seg_SS_stage2.sh
 ```
 Evaluate is the same as before.
 
+### Citation
 
+If you find our code or paper useful, please cite:
 
+```
+@article{pan2024cc4s,
+  title={CC4S: Encouraging Certainty and Consistency in Scribble-Supervised Semantic Segmentation},
+  author={Pan, Zhiyi and Sun, Haochen and Jiang, Peng and Li, Ge and Tu, Changhe and Ling, Haibin},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  year={2024},
+  publisher={IEEE}
+}
+```
 
 
