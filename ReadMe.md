@@ -13,6 +13,10 @@ The work is based on URSS (https://github.com/panzhiyi/URSS) and has been accept
 pip install -r requirements.txt
 ```
 
+##### checkpoint
+
+You can download our [pretrained model](https://drive.google.com/drive/folders/1pA0OKI5dczI5rgk-tPaZrmmFwkbm37DE?usp=sharing) to reproduce the results reported in the paper.
+
 ##### baseline
 
 Please modify the dataset file path in **train_seg_baseline.sh** and run:
