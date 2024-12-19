@@ -205,7 +205,7 @@ def crf_inference(img, probs, t=10, scale_factor=1, labels=21):
     from pydensecrf.utils import unary_from_softmax
 
     #h, w = img.size()[2:4]
-    h, w = img.shash pe[0:2]
+    h, w = img.shape[0:2]
     n_labels = labels
 
     d = dcrf.DenseCRF2D(w, h, n_labels)
