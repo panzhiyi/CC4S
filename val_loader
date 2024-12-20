@@ -212,12 +212,10 @@ val_transform = transform.Compose ( [transform.ToTensor ()])
 train_transform = transform.Compose ( [transform.ToTensor ()])
 
 #for train-seg data
-train_dataset = dataset.SemData(split='train', data_root=args.dataset_path, data_list='train.txt', 
-                                transform=train_transform, path = args.train_path)                            #Remember to change!!
 val_dataset = dataset.SemData(split='val', data_root=args.dataset_path, data_list='val.txt', 
                                 transform=val_transform, path = 'SegmentationClassAug')
 
-train_loader = data.DataLoader(train_dataset, num_workers=args.workers, batch_size=1, shuffle=True, pin_memory=True)
+
 val_loader = data.DataLoader(val_dataset, num_workers=args.workers, batch_size=1, shuffle=False, pin_memory=True)
 
 if args.model_type == 'RW':
@@ -238,6 +236,10 @@ else:
     print("runing val_data:")
     #test(args, val_loader, model, args.numclasses, mean, std, 512, 465, 465, [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]) 
     print("runing train_data:")
+    train_dataset = dataset.SemData(split='train', data_root=args.dataset_path, data_list='train.txt', 
+                                transform=train_transform, path = args.train_path)                            #Remember to change!!
+    train_loader = data.DataLoader(train_dataset, num_workers=args.workers, batch_size=1, shuffle=True, pin_memory=True)
+    
     test(args, train_loader, model, args.numclasses, mean, std, 512, 465, 465, [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0])    #output data for train
 
 
