@@ -234,7 +234,7 @@ if if_mask is 1:
     test(args, val_loader, model, args.numclasses, mean, std, 512, 465, 465, [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0])
 else:
     print("runing val_data:")
-    #test(args, val_loader, model, args.numclasses, mean, std, 512, 465, 465, [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]) 
+    test(args, val_loader, model, args.numclasses, mean, std, 512, 465, 465, [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]) 
     print("runing train_data:")
     train_dataset = dataset.SemData(split='train', data_root=args.dataset_path, data_list='train.txt', 
                                 transform=train_transform, path = args.train_path)                            #Remember to change!!
