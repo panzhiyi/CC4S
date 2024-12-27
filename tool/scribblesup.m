@@ -1,13 +1,13 @@
 %parpool(24);
-eq1_times = 100;                %eq1Ëõ·Å±¶Êı
-eq2_times = 100;                %eq2Ëõ·Å±¶Êı
-eq3_times = 0.8;                 %eq3Ëõ·Å±¶Êı
+eq1_times = 100;                %eq1ç¼©æ”¾å€æ•°
+eq2_times = 100;                %eq2ç¼©æ”¾å€æ•°
+eq3_times = 0.8;                 %eq3ç¼©æ”¾å€æ•°
 eq3m_times = 0.8;
-gama = 1;                       %¦Ãtimes for Z(eq2)
+gama = 1;                       %Î³times for Z(eq2)
 thr = 0.8;
-img_path='/home/ubuntu/JP/data/VOC2012/minicoco/';
-scr_path='/home/ubuntu/JP/data/VOC2012/minicoco_scribble/'; 	%scribble path
-scr_path_list ='/home/ubuntu/JP/data/VOC2012/minicoco_scribble/*.png';
+img_path='/home/ubuntu/JP/data/VOC2012/pascal_2012_scribble/';
+scr_path='/home/ubuntu/JP/data/VOC2012/pascal_2012_scribble_scribble/'; 	%scribble path
+scr_path_list ='/home/ubuntu/JP/data/VOC2012/pascal_2012_scribble_scribble/*.png';
 sav_path = '/home/ubuntu/JP/data/VOC2012/spiex/';		%save_path,
 sav_path2 = '/home/ubuntu/JP/data/VOC2012/Laplace/';
 mkdir(sav_path);
@@ -29,23 +29,23 @@ parfor i=1:length(list)
     img=imread([img_path list(i).name(1:end-4) '.jpg']);
     scr=imread([scr_path list(i).name(1:end-4) '.png']);
     
-    %³¬ÏñËØ·Ö¸î
+    %è¶…åƒç´ åˆ†å‰²
     [L,N]=superpixels(img,800);
     if_save = parsave(sav_path,[list(i).name(1:end-4)],L);
     %continue
     
-    %¼ÆËãÍ¼Æ¬Ìİ¶È
+    %è®¡ç®—å›¾ç‰‡æ¢¯åº¦
     img_size = size(img);
     if numel(img_size)<=2
         img = gray2rgb(img);
     end
     img_gray=double(rgb2gray(img));
-    [img_grad1,img_grad2]=gradient(img_gray);  %»ñÈ¡Ìİ¶È
+    [img_grad1,img_grad2]=gradient(img_gray);  %è·å–æ¢¯åº¦
     img_grad=cat(3,img_grad1,img_grad2);
     grad_min=min(img_grad(:));
     grad_max=max(img_grad(:));
     
-    %¼ÆËãÁÚ½Ó¹ØÏµ
+    %è®¡ç®—é‚»æ¥å…³ç³»
     glcms = graycomatrix(L,'NumLevels',N,'GrayLimits',[1,N],'Offset',[0,1;1,0]);
     glcms = sum(glcms,3);    % add together the two matrices
     glcms = glcms + glcms.'; % add upper and lower triangles together, make it symmetric
@@ -53,7 +53,7 @@ parfor i=1:length(list)
     [I,J] = find(glcms);     % returns coordinates of non-zero elements
     neighbors = [J,I];
     
-    %Ô¤Éè±äÁ¿
+    %é¢„è®¾å˜é‡
     eq1=ones(N,21)*inf;
     eq1_1=ones(1,21)*inf;
     temp=unique(scr);
@@ -63,15 +63,15 @@ parfor i=1:length(list)
     eq3_t=zeros(N,10*2);
     eq3=zeros(N);
     for k=1:N
-        %% ¼ÆËã¹«Ê½ 2
+        %% è®¡ç®—å…¬å¼ 2
         temp=unique(scr(L==k));
         temp=temp(temp~=255);
         eq1(sub2ind(size(eq1),k*ones(size(temp)),temp+1))=0;
         if isempty(temp)
             eq1(k,:)=eq1_1.';
         end
-        %% ¼ÆËã¹«Ê½ 4 ÖĞÖ±·½Í¼ÌØÕ÷
-        %¼ÆËãÑÕÉ«¿Õ¼äÖ±·½Í¼
+        %% è®¡ç®—å…¬å¼ 4 ä¸­ç›´æ–¹å›¾ç‰¹å¾
+        %è®¡ç®—é¢œè‰²ç©ºé—´ç›´æ–¹å›¾
         hist_c=[];
         for c=1:3
             img_c=img(:,:,c);
@@ -80,7 +80,7 @@ parfor i=1:length(list)
             hist_c=[hist_c hist.Values/length(img_c(L==k))];
         end
         eq3_c(k,:)=hist_c;
-        %¼ÆËãÎÆÀíÖ±·½Í¼
+        %è®¡ç®—çº¹ç†ç›´æ–¹å›¾
         hist_t=[];
         for t=1:2
             img_t=img_grad(:,:,t);
@@ -90,7 +90,7 @@ parfor i=1:length(list)
         end
         eq3_t(k,:)=hist_t;
     end
-    %% ¸ù¾İÁÚ½Ó¹ØÏµ¼ÆËã¹«Ê½ 4
+    %% æ ¹æ®é‚»æ¥å…³ç³»è®¡ç®—å…¬å¼ 4
     for n=1:length(I)
         if eq3(neighbors(n,1),neighbors(n,2))==0 && eq3(neighbors(n,2),neighbors(n,1))==0
             temp=norm(eq3_c(neighbors(n,1),:)-eq3_c(neighbors(n,2),:))/25+norm(eq3_t(neighbors(n,1),:)-eq3_t(neighbors(n,2),:))/100;
@@ -100,7 +100,7 @@ parfor i=1:length(list)
     eq3=eq3+eq3';
     
     
-    %% ±£´æeq1,eq3,ÒÔ¼°superpixelsµÄ½á¹ûL matrices
+    %% ä¿å­˜eq1,eq3,ä»¥åŠsuperpixelsçš„ç»“æœL matrices
     eq3 = log(eq3);
     eq3 = exp(-eq3*5);
     eq3(eq3 == Inf) = 0;
